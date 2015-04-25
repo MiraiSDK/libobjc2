@@ -126,6 +126,8 @@ else ()
 	add_definitions(-DNO_LEGACY)
 endif ()
 
+set(ENABLE_SOVERSION TRUE CACHE BOOL "Enable soname version")
+
 find_package(LLVM QUIET)
 set(DEFAULT_ENABLE_LLVM ${LLVM_FOUND})
 if (DEFAULT_ENABLE_LLVM)
@@ -210,8 +212,10 @@ if (ENABLE_OBJCXX)
 			add_library(objcxx SHARED ${libobjcxx_CXX_SRCS})
 			set_target_properties(objcxx PROPERTIES
 				LINKER_LANGUAGE C
-				SOVERSION ${libobjc_VERSION}
 				)
+			if (ENABLE_SOVERSION)
+				set_target_properties(objcxx PROPERTIES SOVERSION ${libobjc_VERSION})
+			endif()
 			target_link_libraries(objcxx ${CXX_RUNTIME})
 			set(CXX_RUNTIME "")
 			list(APPEND INSTALL_TARGETS objcxx)
@@ -226,8 +230,11 @@ if (ENABLE_OBJCXX)
 		add_library(objcxx SHARED ${libobjcxx_CXX_SRCS})
 		set_target_properties(objcxx PROPERTIES
 			LINKER_LANGUAGE C
-			SOVERSION ${libobjc_VERSION}
 			)
+		if (ENABLE_SOVERSION)
+			set_target_properties(objcxx PROPERTIES SOVERSION ${libobjc_VERSION})
+		endif()
+
 		set(CXX_RUNTIME "")
 		list(APPEND INSTALL_TARGETS objcxx)
 	endif ()
@@ -247,10 +254,12 @@ add_library(objc SHARED ${libobjc_C_SRCS} ${libobjc_ASM_SRCS} ${libobjc_OBJC_SRC
 
 set_target_properties(objc PROPERTIES
 	LINKER_LANGUAGE C
-	SOVERSION ${libobjc_VERSION}
 	OUTPUT_NAME ${LIBOBJC_NAME}
 	LINK_FLAGS "${objc_LINK_FLAGS}"
 	)
+if (ENABLE_SOVERSION)
+	set_target_properties(objc PROPERTIES SOVERSION ${libobjc_VERSION})
+endif()
 
 set_property(TARGET PROPERTY NO_SONAME true)
 
