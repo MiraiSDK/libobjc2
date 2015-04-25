@@ -483,8 +483,7 @@ BEGIN_PERSONALITY_FUNCTION(__gnustep_objc_personality_v0)
 	return internal_objc_personality(version, actions, exceptionClass,
 			exceptionObject, context, YES);
 }
-// FIXME!
-#ifndef __arm__
+
 BEGIN_PERSONALITY_FUNCTION(__gnustep_objcxx_personality_v0)
 	if (exceptionClass == objc_exception_class)
 	{
@@ -496,15 +495,22 @@ BEGIN_PERSONALITY_FUNCTION(__gnustep_objcxx_personality_v0)
 			ex->cxx_exception = objc_init_cxx_exception(newEx);
 			ex->cxx_exception->exception_class = cxx_exception_class;
 			ex->cxx_exception->exception_cleanup = cleanup;
+#ifdef __arm__ //arm abi
+			ex->cxx_exception->unwinder_cache = exceptionObject->unwinder_cache;
+			ex->cxx_exception->barrier_cache = exceptionObject->barrier_cache;
+			ex->cxx_exception->cleanup_cache = exceptionObject->cleanup_cache;
+			ex->cxx_exception->pr_cache = exceptionObject->pr_cache;
+			ex->cxx_exception->unwinder_cache = exceptionObject->unwinder_cache;
+#else //itanium abi
 			ex->cxx_exception->private_1 = exceptionObject->private_1;
 			ex->cxx_exception->private_2 = exceptionObject->private_2;
+#endif
 		}
 		exceptionObject = ex->cxx_exception;
 		exceptionClass = cxx_exception_class;
 	}
 	return CALL_PERSONALITY_FUNCTION(__gxx_personality_v0);
 }
-#endif
 
 // Weak references to C++ runtime functions.  We don't bother testing that
 // these are 0 before calling them, because if they are not resolved then we
