@@ -186,10 +186,21 @@ set(ENABLE_OBJCXX true CACHE BOOL
 	"Enable support for Objective-C++")
 set(FORCE_LIBOBJCXX false CACHE BOOL
 	"Force building a separate Objective-C++ runtime library")
+set(CXX_RUNTIME_NAME "" CACHE STRING
+	"Name of C++ shared library (e.g. libcxxrt.so, libsupc++.so)")
 if (ENABLE_OBJCXX)
+	
+	# Try to find c++ runtime provided by ${CXX_RUNTIME_NAME}
+	if (CXX_RUNTIME_NAME)
+		find_library(CXX_RUNTIME NAMES ${CXX_RUNTIME_NAME})
+	endif()
+	
 	# Try to find libcxxrt.so.  We can link to this to provide the C++ ABI
 	# layer, if it exists.
-	find_library(CXX_RUNTIME NAMES libcxxrt.so)
+	if (NOT CXX_RUNTIME)
+		find_library(CXX_RUNTIME NAMES libcxxrt.so)
+	endif (NOT CXX_RUNTIME)
+
 	# If it doesn't, then look for GNU libsupc++.so instead (either works,
 	# they're ABI compatible).
 	if (NOT CXX_RUNTIME)
