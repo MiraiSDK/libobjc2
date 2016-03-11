@@ -19,12 +19,13 @@ set(TESTS
 	NestedExceptions.m
 	PropertyAttributeTest.m
 	PropertyIntrospectionTest.m
-	PropertyIntrospectionTest2.m
+	PropertyIntrospectionTest2_arc.m
 	ProtocolCreation.m
 	ResurrectInDealloc_arc.m
 	RuntimeTest.m
 	WeakBlock_arc.m
 	WeakReferences_arc.m
+	ivar_arc.m
 	objc_msgSend.m
 	msgInterpose.m
 	NilException.m
